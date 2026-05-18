@@ -1,8 +1,3 @@
-import { registerRootComponent } from 'expo';
-
-import App from './App';
-
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+// Expo Router 6 入口转发 — package.json main 应该是 "expo-router/entry"
+// 这个文件保留只是为了避免 IDE/工具误报，实际入口在 app/_layout.tsx
+import 'expo-router/entry';
