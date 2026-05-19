@@ -11,6 +11,7 @@ import { queryClient } from '../src/lib/queryClient';
 import { useAuthStore } from '../src/store/auth';
 import { useCartStore } from '../src/store/cart';
 import { initPush, registerForPush } from '../src/lib/push';
+import { initSentry } from '../src/lib/sentry';
 
 export default function RootLayout() {
   const hydrateAuth = useAuthStore((s) => s.hydrate);
@@ -22,6 +23,7 @@ export default function RootLayout() {
     hydrateAuth().catch((e) => console.error('[hydrate auth]', e));
     hydrateCart().catch((e) => console.error('[hydrate cart]', e));
     initPush();
+    initSentry();
   }, [hydrateAuth, hydrateCart]);
 
   // 登录态变化 → 注册推送 token 到后端
