@@ -4,6 +4,7 @@ import { ArrowLeft, Crown, CupSoda, Check, Star } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTheme } from '../src/lib/theme';
+import { useAuthStore } from '../src/store/auth';
 
 /** 会员等级 — 4 级横滑 */
 const TIERS = [
@@ -60,8 +61,9 @@ const TIERS = [
 
 export default function MembershipScreen() {
   const { isDark } = useTheme();
+  const user = useAuthStore(s => s.user);
 
-  const currentCups = 13;
+  const currentCups = user?.total_cups ?? 0;
   // 计算当前等级
   const currentTier = [...TIERS].reverse().find(t => currentCups >= t.min) || TIERS[0];
   const nextTierIdx = TIERS.indexOf(currentTier) + 1;

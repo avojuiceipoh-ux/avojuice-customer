@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, ChevronRight, Copy, Wallet, MapPin, CupSoda } from 'lucide-react-native';
 import { useTheme } from '../../src/lib/theme';
+import { useAuthStore } from '../../src/store/auth';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_GAP = 12;
@@ -12,10 +13,11 @@ const CARD_WIDTH = SCREEN_WIDTH - 40; // px-5 padding × 2
 /** 首页 — 新布局 */
 export default function HomeScreen() {
   const { isDark } = useTheme();
+  const user = useAuthStore(s => s.user);
   const carouselRef = useRef<ScrollView>(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
-  const cups = 13;
+  const cups = user?.total_cups ?? 0;
   const nextFreeAt = 30;
   const walletBalance = 15.50;
   const userName = 'Andrew';
