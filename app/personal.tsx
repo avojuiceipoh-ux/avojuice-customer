@@ -2,11 +2,12 @@ import { View, Text, ScrollView, Pressable, TextInput, Alert } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeft, Camera, ChevronRight, User, Phone, Mail,
-  Calendar, VenusAndMars, Check,
+  Calendar, VenusAndMars, Check, CupSoda, Crown,
 } from 'lucide-react-native';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '../src/lib/theme';
+import { walletApi } from '../src/api/wallet';
 
 export default function PersonalScreen() {
   const { isDark } = useTheme();
@@ -17,6 +18,25 @@ export default function PersonalScreen() {
   const sub = isDark ? '#a3a3a3' : '#737373';
   const border = isDark ? '#404040' : '#e5e5e5';
   const brandGreen = '#649b29';
+
+  const [walletCups, setWalletCups] = useState<number | null>(null);
+
+  useEffect(() => {
+    walletApi.get().then(res => setWalletCups(res.cups_total)).catch(() => {});
+  }, []);
+
+  const cups = walletCups ?? 0;
+
+  // 会员等级计算
+  const TIERS = [
+    { name: '爱·初芽', emoji: '🌱', min: 0,  max: 14,  color: '#a8d88a', bg: '#3d6b1e' },
+    { name: '我·成长', emoji: '🥑', min: 15, max: 89,  color: '#649b29', bg: '#2d4a0e' },
+    { name: '果·绽放', emoji: '🌟', min: 90, max: 299, color: '#f59e0b', bg: '#78350f' },
+    { name: '饮·圆满', emoji: '👑', min: 300, max: Infinity, color: '#f0c040', bg: '#3d2600' },
+  ];
+  const currentTier = [...TIERS].reverse().find(t => cups >= t.min) || TIERS[0];
+  const nextTier = TIERS[TIERS.indexOf(currentTier) + 1] || null;
+  const cupsToNext = nextTier ? nextTier.min - cups : 0;
 
   // 可编辑字段
   const [name, setName] = useState('Andrew Heng');
@@ -96,6 +116,32 @@ export default function PersonalScreen() {
             </View>
           </Pressable>
           <Text style={{ color: sub }} className="text-xs mt-2">点击更换照片</Text>
+        </View>
+
+        {/* 会员卡片 */}
+        <View className="px-5 mb-5">
+          <Pressable
+            className="rounded-2xl p-4 flex-row items-center"
+            style={{ backgroundColor: currentTier.bg }}
+            onPress={() => router.push('/membership' as any)}
+          >
+            <Text className="text-3xl">{currentTier.emoji}</Text>
+            <View className="flex-1 ml-3">
+              <View className="flex-row items-center">
+                <Crown size={14} color={currentTier.color} />
+                <Text style={{ color: currentTier.color }} className="text-sm font-bold ml-1.5">
+                  {currentTier.name}
+                </Text>
+              </View>
+              <View className="flex-row items-center mt-1">
+                <CupSoda size={14} color="rgba(255,255,255,0.6)" />
+                <Text className="text-white/60 text-xs ml-1">
+                  {cups} 杯 · {cupsToNext > 0 ? `再集 ${cupsToNext} 杯升「${nextTier?.name}」` : '已达最高等级'}
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={18} color="rgba(255,255,255,0.4)" />
+          </Pressable>
         </View>
 
         {/* 表单卡片 */}
