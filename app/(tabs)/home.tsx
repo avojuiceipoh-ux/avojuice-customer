@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const carouselRef = useRef<ScrollView>(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
-  const cups = 24;
+  const cups = 13;
   const nextFreeAt = 30;
   const walletBalance = 15.50;
   const userName = 'Andrew';
