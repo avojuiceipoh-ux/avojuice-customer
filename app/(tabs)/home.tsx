@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, ChevronRight, Copy, Wallet, MapPin, CupSoda } from 'lucide-react-native';
 import { useTheme } from '../../src/lib/theme';
 import { useAuthStore } from '../../src/store/auth';
+import { walletApi } from '../../src/api/wallet';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_GAP = 12;
@@ -17,10 +18,32 @@ export default function HomeScreen() {
   const carouselRef = useRef<ScrollView>(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
-  const cups = user?.total_cups ?? 0;
-  const nextFreeAt = 30;
-  const walletBalance = 15.50;
-  const userName = 'Andrew';
+  const [walletData, setWalletData] = useState<{
+    cups_total: number;
+    cups_progress: number;
+    cups_to_next_reward: number;
+    wallet_balance: number;
+    free_voucher_count: number;
+  } | null>(null);
+
+  useEffect(() => {
+    walletApi.get().then(res => {
+      setWalletData({
+        cups_total: res.cups_total,
+        cups_progress: res.cups_progress,
+        cups_to_next_reward: res.cups_to_next_reward,
+        wallet_balance: Number(res.wallet.balance),
+        free_voucher_count: res.free_voucher_count,
+      });
+    }).catch(() => {});
+  }, []);
+
+  const cups = walletData?.cups_total ?? 0;
+  const cupsProgress = walletData?.cups_progress ?? 0;
+  const cupsToNext = walletData?.cups_to_next_reward ?? 10;
+  const walletBalance = walletData?.wallet_balance ?? 0;
+  const voucherCount = walletData?.free_voucher_count ?? 0;
+  const userName = user?.nickname || 'Guest';
   const referralCode = 'AVOJUICE88';
 
   // 促销海报数据
@@ -137,7 +160,7 @@ export default function HomeScreen() {
                 className="text-[10px]"
                 style={{ color: isDark ? '#a3a3a3' : '#6b8f3a' }}
               >
-                {nextFreeAt - cups} 杯后送一杯
+                {cupsToNext > 0 ? `${cupsToNext} 杯后送一杯` : '🎉 免费券已就绪'}
               </Text>
             </View>
 
@@ -165,14 +188,14 @@ export default function HomeScreen() {
               >
                 <View
                   className="h-full rounded-full"
-                  style={{ backgroundColor: isDark ? '#8bc34a' : '#649b29', width: `${(cups / nextFreeAt) * 100}%` }}
+                  style={{ backgroundColor: isDark ? '#8bc34a' : '#649b29', width: `${(cupsProgress / 10) * 100}%` }}
                 />
               </View>
               <Text
                 className="text-[10px] mt-1"
                 style={{ color: isDark ? '#a3a3a3' : '#6b8f3a' }}
               >
-                🎁 满 {nextFreeAt} 杯送一杯
+                🎁 满 10 杯送一杯
               </Text>
             </View>
           </View>
