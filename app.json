@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#52c41a"
+      "backgroundColor": "#649b29"
     },
     "ios": {
       "supportsTablet": false,
@@ -21,7 +21,7 @@
       "package": "my.avojuice.customer",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#52c41a"
+        "backgroundColor": "#649b29"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false

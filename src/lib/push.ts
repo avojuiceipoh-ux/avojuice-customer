@@ -36,7 +36,7 @@ export function initPush() {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#52c41a',
+      lightColor: '#649b29',
       sound: 'default',
     }).catch(() => {});
   }

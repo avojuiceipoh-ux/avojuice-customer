@@ -1,12 +1,21 @@
 /**
- * ProductSheet — 菜单页 + 号弹出的底部浮层
+ * ProductSheet — Reanimated 底部抽屉
  *
- * 客户不用跳详情页，直接选 甜度 / 冰量 / 数量，一键加入购物车。
- * 详情页保留给"想看大图、读描述"的用户。
+ * 弹簧动画滑出/收回，支持下滑关闭，60fps 流畅。
  */
 
-import { useState, useMemo, useEffect } from 'react';
-import { View, Text, Modal, Pressable, ScrollView } from 'react-native';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { View, Text, Pressable, ScrollView, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  runOnJS,
+  interpolate,
+  Extrapolation,
+} from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   formatRM,
   toPrice,
@@ -22,6 +31,10 @@ const OPTION_TYPE_LABELS: Record<string, string> = {
   topping: '加料',
 };
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const SHEET_MAX_HEIGHT = SCREEN_HEIGHT * 0.75;
+const DISMISS_THRESHOLD = 120;
+
 interface Props {
   product: Product | null;
   visible: boolean;
@@ -32,7 +45,11 @@ export function ProductSheet({ product, visible, onClose }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [selected, setSelected] = useState<Record<string, ProductOption>>({});
 
-  // 按 type 分组（保留后端顺序）
+  // Reanimated values
+  const translateY = useSharedValue(SHEET_MAX_HEIGHT);
+  const backdropOpacity = useSharedValue(0);
+
+  // 按 type 分组
   const optionGroups = useMemo(() => {
     if (!product) return {};
     return product.options.reduce<Record<string, ProductOption[]>>((acc, o) => {
@@ -41,17 +58,67 @@ export function ProductSheet({ product, visible, onClose }: Props) {
     }, {});
   }, [product]);
 
-  // 每次打开重置选项 + 数量
+  // 打开/关闭动画
   useEffect(() => {
-    if (!visible || !product) return;
-    const defaults: Record<string, ProductOption> = {};
-    Object.entries(optionGroups).forEach(([type, opts]) => {
-      const def = opts.find((o) => o.is_default) ?? opts[0];
-      if (def) defaults[type] = def;
+    if (visible && product) {
+      // 重置选项
+      const defaults: Record<string, ProductOption> = {};
+      Object.entries(optionGroups).forEach(([type, opts]) => {
+        const def = opts.find((o) => o.is_default) ?? opts[0];
+        if (def) defaults[type] = def;
+      });
+      setSelected(defaults);
+      setQuantity(1);
+
+      // 动画：滑入
+      translateY.value = withSpring(0, {
+        stiffness: 300,
+        damping: 30,
+        mass: 0.8,
+      });
+      backdropOpacity.value = withTiming(1, { duration: 250 });
+    } else {
+      translateY.value = withSpring(SHEET_MAX_HEIGHT, { stiffness: 300, damping: 30 });
+      backdropOpacity.value = withTiming(0, { duration: 200 });
+    }
+  }, [visible, product]);
+
+  const dismiss = useCallback(() => {
+    translateY.value = withSpring(SHEET_MAX_HEIGHT, { stiffness: 300, damping: 30 }, () => {
+      runOnJS(onClose)();
     });
-    setSelected(defaults);
-    setQuantity(1);
-  }, [visible, product, optionGroups]);
+    backdropOpacity.value = withTiming(0, { duration: 200 });
+  }, []);
+
+  // 手势：下滑关闭
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      if (e.translationY > 0) {
+        translateY.value = e.translationY;
+        backdropOpacity.value = interpolate(
+          e.translationY,
+          [0, DISMISS_THRESHOLD],
+          [1, 0],
+          Extrapolation.CLAMP,
+        );
+      }
+    })
+    .onEnd((e) => {
+      if (e.translationY > DISMISS_THRESHOLD || e.velocityY > 500) {
+        runOnJS(dismiss)();
+      } else {
+        translateY.value = withSpring(0, { stiffness: 300, damping: 30 });
+        backdropOpacity.value = withTiming(1, { duration: 200 });
+      }
+    });
+
+  const sheetStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
 
   if (!product) return null;
 
@@ -79,22 +146,46 @@ export function ProductSheet({ product, visible, onClose }: Props) {
       image_url: product.image_url ?? undefined,
     });
 
-    onClose();
+    dismiss();
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-      statusBarTranslucent
-    >
-      {/* backdrop — 点击关闭 */}
-      <Pressable onPress={onClose} className="flex-1 bg-black/50 justify-end">
-        {/* 卡片内容 — Pressable 阻止点击穿透到 backdrop */}
-        <Pressable onPress={() => {}}>
-          <View className="bg-white rounded-t-3xl pb-8">
+    <>
+      {/* Backdrop */}
+      {visible && (
+        <Animated.View
+          style={[
+            {
+              position: 'absolute',
+              top: 0, left: 0, right: 0, bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              zIndex: 40,
+            },
+            backdropStyle,
+          ]}
+        >
+          <Pressable style={{ flex: 1 }} onPress={dismiss} />
+        </Animated.View>
+      )}
+
+      {/* Sheet */}
+      {visible && (
+        <GestureDetector gesture={panGesture}>
+          <Animated.View
+            style={[
+              {
+                position: 'absolute',
+                bottom: 0, left: 0, right: 0,
+                maxHeight: SHEET_MAX_HEIGHT,
+                backgroundColor: '#fff',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+                paddingBottom: 32,
+                zIndex: 50,
+              },
+              sheetStyle,
+            ]}
+          >
             {/* 把手 */}
             <View className="items-center pt-3 pb-1">
               <View className="w-12 h-1 rounded-full bg-ink-200" />
@@ -122,10 +213,10 @@ export function ProductSheet({ product, visible, onClose }: Props) {
               </View>
             )}
 
-            {/* 选项分组 — 内容多时可滚动 */}
+            {/* 选项分组 */}
             <ScrollView
               className="px-5"
-              style={{ maxHeight: 320 }}
+              style={{ maxHeight: 280 }}
               showsVerticalScrollIndicator={false}
             >
               {Object.entries(optionGroups).map(([type, opts]) => (
@@ -193,9 +284,9 @@ export function ProductSheet({ product, visible, onClose }: Props) {
                 </Text>
               </Pressable>
             </View>
-          </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+          </Animated.View>
+        </GestureDetector>
+      )}
+    </>
   );
 }

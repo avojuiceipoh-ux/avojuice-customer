@@ -22,6 +22,7 @@ export interface CreateOrderPayload {
   items: OrderItemInput[];
   payment_method: PaymentMethod;
   wallet_amount?: number;
+  /** 用免费券下单时传券 ID；后端自动选最贵那杯作为兑换目标 */
   voucher_id?: string;
   promotion_code?: string;
   notes?: string;
@@ -31,6 +32,21 @@ export interface CreateOrderResponse {
   success: boolean;
   order_id: string;
   total_paid: number;
+  cups_awarded: number;
+  /** 本单触发了几张免费券（满 10 杯发 1 张） */
+  vouchers_issued: number;
+  /** 本单后的集杯进度（0-9） */
+  progress_after: number;
+  /** 本单是否使用了免费券 */
+  voucher_used: boolean;
+  /** 免费券抵扣金额（最高 RM 8） */
+  voucher_discount: number;
+  /** 推荐人是否获得返现（顾客本人下单时若有推荐关系才会有值） */
+  referrer_cashback: {
+    referrerId: string;
+    actualCashback: number;
+    newBalance: number;
+  } | null;
   message: string;
 }
 
@@ -40,6 +56,8 @@ export interface OrderSummary {
   subtotal: string;
   discount_amount: string;
   wallet_used: string;
+  voucher_used: boolean;
+  voucher_discount: string;
   total_paid: string;
   pickup_code: string;
   cups_awarded: number;

@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, Pressable, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Crown, Coffee, Check, Star } from 'lucide-react-native';
+import { ArrowLeft, Crown, CupSoda, Check, Star } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTheme } from '../src/lib/theme';
@@ -100,7 +100,7 @@ export default function MembershipScreen() {
           className="rounded-xl px-4 py-2.5 flex-row items-center"
           style={{ backgroundColor: isDark ? 'rgba(100,155,41,0.15)' : 'rgba(100,155,41,0.08)' }}
         >
-          <Coffee size={16} color="#649b29" />
+          <CupSoda size={16} color="#649b29" />
           <Text style={{ color: '#649b29' }} className="text-sm font-semibold ml-2">
             当前杯数：{currentCups} · {cupsToNext > 0 ? `再集 ${cupsToNext} 杯升级「${nextTier?.name}」` : '已达最高等级 🎉'}
           </Text>

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Plus, ChevronRight, Copy, Wallet, MapPin, Coffee } from 'lucide-react-native';
+import { Plus, ChevronRight, Copy, Wallet, MapPin, CupSoda } from 'lucide-react-native';
 import { useTheme } from '../../src/lib/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -140,7 +140,7 @@ export default function HomeScreen() {
             </View>
 
             <View className="flex-row items-baseline gap-1 mt-1">
-              <Coffee size={18} color={isDark ? '#a3c97a' : '#4a7c20'} />
+              <CupSoda size={18} color={isDark ? '#a3c97a' : '#4a7c20'} />
               <Text
                 className="text-3xl font-extrabold"
                 style={{ color: isDark ? '#e8f5e0' : '#3d6b1e' }}

@@ -125,17 +125,19 @@ export default function MenuScreen() {
 
       {/* 底部购物车浮层 */}
       {cartCount > 0 && (
-        <Pressable
-          onPress={() => router.push('/cart')}
-          className="absolute bottom-4 left-4 right-4 bg-brand-500 active:bg-brand-600 rounded-full px-5 py-3 flex-row items-center justify-between"
-          style={{
-            shadowColor: '#000',
-            shadowOpacity: 0.15,
-            shadowOffset: { width: 0, height: 4 },
-            shadowRadius: 12,
-            elevation: 6,
-          }}
-        >
+        <Pressable onPress={() => router.push('/cart')}>
+          {({ pressed }) => (
+            <View
+              className="absolute bottom-4 left-4 right-4 bg-brand-500 rounded-full px-5 py-3 flex-row items-center justify-between"
+              style={{
+                shadowColor: '#000',
+                shadowOpacity: 0.15,
+                shadowOffset: { width: 0, height: 4 },
+                shadowRadius: 12,
+                elevation: 6,
+                opacity: pressed ? 0.7 : 1,
+              }}
+            >
           <View className="flex-row items-center">
             <View className="w-8 h-8 rounded-full bg-white/20 items-center justify-center mr-3">
               <Text className="text-white font-bold">{cartCount}</Text>
@@ -143,6 +145,8 @@ export default function MenuScreen() {
             <Text className="text-white font-semibold">查看购物车</Text>
           </View>
           <Text className="text-white">前往结算 →</Text>
+            </View>
+          )}
         </Pressable>
       )}
 

@@ -1,241 +1,255 @@
-import { View, Text, ScrollView, Pressable, Alert, Linking, Image, Share } from 'react-native';
+import { useState } from 'react';
+import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Bell, ChevronRight, Crown, Wallet, Ticket,
+  Settings, Phone, Camera, DollarSign,
+} from 'lucide-react-native';
 import { router } from 'expo-router';
-import { Screen } from '../../src/components/Screen';
-import { Button } from '../../src/components/Button';
-import { useAuthStore } from '../../src/store/auth';
-
-const TIERS = [
-  { name: '新鲜果粒', min: 0,    next: 100, emoji: '🌱' },
-  { name: '鲜榨达人', min: 100,  next: 500, emoji: '🥑' },
-  { name: '果饮大师', min: 500,  next: null, emoji: '👑' },
-];
-
-function getTier(spent: number) {
-  let cur = TIERS[0];
-  for (const t of TIERS) if (spent >= t.min) cur = t;
-  return cur;
-}
-
-function shareReferral(code: string) {
-  Share.share({
-    message:
-      `🥑 来爱我果饮喝真水果！\n用我的邀请码 ${code} 注册，你我各得 RM 5 积分。\n下载顾客 App：avojuice.com（待上架）`,
-  }).catch(() => {});
-}
+import { useTheme } from '../../src/lib/theme';
 
 export default function ProfileScreen() {
-  const { user, signOut, token } = useAuthStore();
-  const isAuthed = !!token;
+  const { isDark } = useTheme();
 
-  const handleSignOut = () => {
-    Alert.alert('确认登出？', '登出后需要重新输入手机号', [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '登出',
-        style: 'destructive',
-        onPress: async () => {
-          await signOut();
-        },
-      },
-    ]);
+  const bg = isDark ? '#171717' : '#f5f8f0';
+  const cardBg = isDark ? '#262626' : '#fff';
+  const text = isDark ? '#fafafa' : '#1a1a1a';
+  const sub = isDark ? '#a3a3a3' : '#737373';
+  const transGreen = isDark ? 'rgba(42,51,32,0.85)' : 'rgba(232,245,224,0.85)';
+  const transGreenText = isDark ? '#a8d88a' : '#3d6b1e';
+
+  const userName = 'Andrew Heng';
+  const phoneNum = '012-345 6789';
+  const avatarUrl = null;
+  const points = 13;
+  const walletBalance = 15.50;
+  const voucherCount = 3;
+  const cashbackAmount = 5.20;
+
+  // 会员等级系统 — 四级：爱·初芽 → 我·成长 → 果·绽放 → 饮·圆满
+  // 颜色与 membership 页面统一
+  const tiers = [
+    { min: 0,   name: '爱·初芽', color: '#a8d88a', bgColor: '#3d6b1e', icon: '🌱' },
+    { min: 15,  name: '我·成长', color: '#649b29', bgColor: '#2d4a0e', icon: '🥑' },
+    { min: 90,  name: '果·绽放', color: '#f59e0b', bgColor: '#78350f', icon: '🌟' },
+    { min: 300, name: '饮·圆满', color: '#f0c040', bgColor: '#3d2600', icon: '👑' },
+  ];
+  const currentTier = [...tiers].reverse().find(t => points >= t.min) || tiers[0];
+  const nextTierIdx = tiers.indexOf(currentTier) + 1;
+  const nextTierInfo = tiers[nextTierIdx] || null;
+  const tierName = currentTier.name;
+  const tierColor = currentTier.color;
+  const tierIcon = currentTier.icon;
+  const nextTier = nextTierInfo?.min ?? currentTier.min;
+  const pointsToNext = nextTierInfo ? nextTier - points : 0;
+
+  // 海报轮播
+  const screenW = Dimensions.get('window').width;
+  const [bannerIdx, setBannerIdx] = useState(0);
+  const bannerW = Math.min(screenW * 0.85, 400);
+  const bannerH = Math.round(bannerW * 100 / 330);
+  const bannerGap = 10;
+  const bannerSnap = bannerW + bannerGap;
+  const sidePad = (screenW - bannerW) / 2;
+  const banners = [
+    { emoji: '🥑', title: '牛油果季特惠', desc: '全系列牛油果 RM2 OFF', color: '#649b29' },
+    { emoji: '🎓', title: '学生专享', desc: '凭学生证享 9 折优惠', color: isDark ? '#4ade80' : '#16a34a' },
+    { emoji: '🎉', title: '新品上市', desc: '火龙果椰奶冰沙尝鲜价', color: isDark ? '#f87171' : '#dc2626' },
+  ];
+
+  const onBannerScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setBannerIdx(Math.round(e.nativeEvent.contentOffset.x / bannerSnap));
   };
 
   return (
-    <Screen bg="bg-ink-50">
-      <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-        {/* Header */}
-        <View className="px-5 pt-2 pb-3 bg-white">
-          <Text className="text-2xl font-bold text-ink-900">我的</Text>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: bg }}>
+      {/* Header */}
+      <View className="px-5 pt-3 pb-2 flex-row items-center justify-between">
+        <Text style={{ color: text }} className="text-2xl font-bold">我的</Text>
+        <Pressable className="w-10 h-10 rounded-full items-center justify-center relative" style={{ backgroundColor: cardBg }}>
+          <Bell size={22} color={isDark ? '#d4d4d4' : '#525252'} />
+          <View className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-red-500 border-2" style={{ borderColor: isDark ? '#262626' : '#fff' }} />
+        </Pressable>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        {/* 头像 + 名字 */}
+        <View className="px-5 mt-2 flex-row items-center">
+          <Pressable className="relative">
+            <View className="w-16 h-16 rounded-full items-center justify-center" style={{ backgroundColor: isDark ? '#2a3320' : '#e8f5e0' }}>
+              {avatarUrl ? (
+                <Image source={{ uri: avatarUrl }} className="w-16 h-16 rounded-full" resizeMode="cover" />
+              ) : (
+                <Crown size={28} color="#649b29" />
+              )}
+            </View>
+            <View className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full items-center justify-center" style={{ backgroundColor: '#649b29', borderWidth: 2, borderColor: bg }}>
+              <Camera size={12} color="#fff" />
+            </View>
+          </Pressable>
+          <Pressable className="ml-3 flex-1" onPress={() => router.push('/personal' as any)}>
+            <Text style={{ color: text }} className="text-lg font-bold">{userName}</Text>
+            <View className="flex-row items-center mt-0.5">
+              <Phone size={13} color={sub} />
+              <Text style={{ color: sub }} className="text-sm ml-1">{phoneNum}</Text>
+            </View>
+          </Pressable>
         </View>
 
-        {/* 用户卡 */}
-        <View className="mx-3 mt-3 p-5 rounded-3xl bg-brand-500">
-          {isAuthed && user ? (
-            <View className="flex-row items-center">
-              <View className="w-16 h-16 rounded-full bg-white items-center justify-center mr-4 overflow-hidden">
-                <Image
-                  source={require('../../assets/logo.png')}
-                  style={{ width: 64, height: 64 }}
-                  resizeMode="contain"
-                />
+        {/* 会员等级卡 */}
+        <View className="px-5 mt-4">
+          <Pressable
+            className="rounded-2xl p-4"
+            style={{ backgroundColor: currentTier.color }}
+            onPress={() => router.push('/membership' as any)}
+          >
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center">
+                <View className="w-8 h-8 rounded-full bg-white/20 items-center justify-center mr-2">
+                  <Text className="text-base">{tierIcon}</Text>
+                </View>
+                <View>
+                  <Text className="text-white font-bold text-sm">{tierName}</Text>
+                  {pointsToNext > 0 ? (
+                    <Text className="text-white/60 text-xs">再集 {pointsToNext} 积分升级</Text>
+                  ) : (
+                    <Text className="text-white/60 text-xs">已达最高等级 🎉</Text>
+                  )}
+                </View>
               </View>
-              <View className="flex-1">
-                <Text className="text-xl font-bold text-white">
-                  {user.nickname || '果饮粉丝'}
-                </Text>
-                <Text className="text-sm text-white/80 mt-1">{user.phone}</Text>
-                {user.referral_code ? (
-                  <View className="flex-row items-center mt-2">
-                    <View className="px-2 py-0.5 rounded-full bg-white/20">
-                      <Text className="text-xs text-white">
-                        邀请码: {user.referral_code}
-                      </Text>
+              <View className="flex-row items-center bg-white/15 rounded-full px-3 py-1">
+                <Text className="text-white text-xs font-semibold">查看权益</Text>
+                <ChevronRight size={14} color="#fff" style={{ marginLeft: 2 }} />
+              </View>
+            </View>
+            <View className="flex-row items-baseline">
+              <Text className="text-white text-4xl font-extrabold">{points}</Text>
+              <Text className="text-white/60 text-sm ml-2">积分</Text>
+            </View>
+            <View className="mt-3">
+              <View className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <View className="h-full bg-white rounded-full" style={{ width: `${(points / nextTier) * 100}%` }} />
+              </View>
+            </View>
+          </Pressable>
+        </View>
+
+        {/* 钱包 + Reward + 优惠券 */}
+        <View className="px-5 mt-3 flex-row" style={{ gap: 10 }}>
+          <Pressable
+            className="flex-1 rounded-2xl p-3 items-center"
+            style={{ backgroundColor: transGreen }}
+            onPress={() => router.push('/wallet' as any)}
+          >
+            <Wallet size={24} color={transGreenText} />
+            <Text
+              style={{ color: transGreenText, textAlign: 'center' }}
+              className="text-[10px] font-semibold mt-1"
+              numberOfLines={1}
+            >钱包</Text>
+            <Text style={{ color: transGreenText, textAlign: 'center' }} className="text-lg font-extrabold mt-0.5">{walletBalance.toFixed(2)}</Text>
+          </Pressable>
+
+          <Pressable
+            className="flex-1 rounded-2xl p-3 items-center"
+            style={{ backgroundColor: transGreen }}
+            onPress={() => router.push('/reward' as any)}
+          >
+            <DollarSign size={24} color={transGreenText} />
+            <Text
+              style={{ color: transGreenText, textAlign: 'center' }}
+              className="text-[10px] font-semibold mt-1"
+              numberOfLines={1}
+            >Reward</Text>
+            <Text style={{ color: transGreenText, textAlign: 'center' }} className="text-lg font-extrabold mt-0.5">{cashbackAmount.toFixed(2)}</Text>
+          </Pressable>
+
+          <Pressable
+            className="flex-1 rounded-2xl p-3 items-center"
+            style={{ backgroundColor: transGreen }}
+            onPress={() => router.push('/vouchers' as any)}
+          >
+            <Ticket size={24} color={transGreenText} />
+            <Text
+              style={{ color: transGreenText, textAlign: 'center' }}
+              className="text-[10px] font-semibold mt-1"
+              numberOfLines={1}
+            >优惠券</Text>
+            <Text style={{ color: transGreenText, textAlign: 'center' }} className="text-lg font-extrabold mt-0.5">{voucherCount}</Text>
+          </Pressable>
+        </View>
+
+        {/* 海报 */}
+        <View className="mt-4">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            decelerationRate="fast"
+            snapToInterval={bannerSnap}
+            snapToAlignment="center"
+            onMomentumScrollEnd={onBannerScroll}
+            contentContainerStyle={{ paddingHorizontal: sidePad, gap: bannerGap }}
+          >
+            {banners.map((item, i) => (
+              <Pressable key={i}>
+                {({ pressed }) => (
+                  <View
+                    className="rounded-2xl px-5 flex-row items-center"
+                    style={{
+                      width: bannerW,
+                      height: bannerH,
+                      backgroundColor: item.color,
+                      shadowColor: item.color,
+                      shadowOpacity: 0.3,
+                      shadowRadius: 10,
+                      shadowOffset: { width: 0, height: 4 },
+                      opacity: pressed ? 0.7 : 1,
+                    }}
+                  >
+                    <Text className="text-4xl mr-4">{item.emoji}</Text>
+                    <View className="flex-1">
+                      <Text className="text-white text-lg font-bold">{item.title}</Text>
+                      <Text className="text-white/80 text-sm mt-0.5">{item.desc}</Text>
                     </View>
                   </View>
-                ) : null}
-              </View>
-            </View>
-          ) : (
-            <View>
-              <Text className="text-lg font-bold text-white">未登录</Text>
-              <Text className="text-sm text-white/80 mt-1">登录后可下单、累积积分、看历史</Text>
-              <View className="mt-4">
-                <Pressable
-                  onPress={() => router.push('/auth/login')}
-                  className="bg-white rounded-full px-5 py-2 self-start"
-                >
-                  <Text className="text-brand-600 font-bold text-sm">立即登录</Text>
-                </Pressable>
-              </View>
-            </View>
-          )}
+                )}
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          <View className="flex-row justify-center mt-3" style={{ gap: 6 }}>
+            {banners.map((_, i) => (
+              <View
+                key={i}
+                className="rounded-full"
+                style={{
+                  width: i === bannerIdx ? 18 : 6,
+                  height: 6,
+                  backgroundColor: i === bannerIdx ? '#649b29' : (isDark ? '#525252' : '#d4d4d4'),
+                }}
+              />
+            ))}
+          </View>
         </View>
 
-        {/* 常用入口（已登录才显示） */}
-        {isAuthed && (
-          <View className="mx-3 mt-3 bg-white rounded-2xl overflow-hidden">
-            <Row
-              icon="📋"
-              label="我的订单"
-              onPress={() => router.push('/(tabs)/orders')}
-            />
-            <Divider />
-            <Row
-              icon="💚"
-              label="钱包 · 积分"
-              onPress={() => router.push('/(tabs)/wallet')}
-            />
-            <Divider />
-            <Row
-              icon="🎁"
-              label="优惠券"
-              subtitle="V2 上线"
-              disabled
-            />
-            <Divider />
-            <Row
-              icon="👥"
-              label="邀请好友"
-              subtitle="送 TA RM 5，自己也得 RM 5"
-              onPress={() => {
-                if (user?.referral_code) shareReferral(user.referral_code);
-                else Alert.alert('暂未生成邀请码', '请重新登录刷新');
-              }}
-            />
+        {/* 设置 */}
+        <View className="px-5 mt-5">
+          <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: cardBg }}>
+            <Pressable
+              className="flex-row items-center px-4 py-4"
+              onPress={() => router.push('/settings' as any)}
+            >
+              <Settings size={20} color={isDark ? '#a3a3a3' : '#525252'} />
+              <Text style={{ color: text }} className="flex-1 ml-3 font-semibold text-sm">设置</Text>
+              <ChevronRight size={16} color={isDark ? '#525252' : '#d4d4d4'} />
+            </Pressable>
           </View>
-        )}
-
-        {/* 会员等级卡（已登录显示）*/}
-        {isAuthed && (
-          <TierCard />
-        )}
-
-        {/* 帮助 / 关于 */}
-        <View className="mx-3 mt-3 bg-white rounded-2xl overflow-hidden">
-          <Row
-            icon="💬"
-            label="联系客服"
-            onPress={() => {
-              Alert.alert(
-                '联系我们',
-                '老板手机：+60 12-XXX XXXX\nWhatsApp / IG: @avojuice',
-                [{ text: '好的' }],
-              );
-            }}
-          />
-          <Divider />
-          <Row
-            icon="📜"
-            label="用户协议"
-            onPress={() => Alert.alert('用户协议', '完整版 V2 上线', [{ text: '好的' }])}
-          />
-          <Divider />
-          <Row
-            icon="🔐"
-            label="隐私政策"
-            onPress={() => Alert.alert('隐私政策', '完整版 V2 上线', [{ text: '好的' }])}
-          />
-          <Divider />
-          <Row icon="ℹ️" label="关于" subtitle="爱我果饮 v1.0.0" />
         </View>
 
-        {/* 登出 */}
-        {isAuthed && (
-          <View className="mx-3 mt-6">
-            <Button variant="ghost" fullWidth onPress={handleSignOut}>
-              登出账号
-            </Button>
-          </View>
-        )}
-
-        <Text className="text-center text-xs text-ink-400 mt-6">
-          爱我果饮 · UTAR · 真水果 · 一步一脚印
+        <Text style={{ color: sub }} className="text-center text-xs mt-6">
+          爱我果饮 · 本真之味 · 果中显
         </Text>
       </ScrollView>
-    </Screen>
+    </SafeAreaView>
   );
-}
-
-function TierCard() {
-  // V1：从 user_stats 取 total_spent（如果没接 API 暂时用 0）
-  // V2：可以从后端拉 GET /admin/customers/:id 拿真实数据
-  const totalSpent = 0
-  const tier = getTier(totalSpent)
-  const progress = tier.next ? Math.min(100, (totalSpent / tier.next) * 100) : 100
-
-  return (
-    <View className="mx-3 mt-3 p-4 bg-white rounded-3xl">
-      <View className="flex-row items-center mb-3">
-        <Text className="text-3xl mr-3">{tier.emoji}</Text>
-        <View className="flex-1">
-          <Text className="text-base font-bold text-ink-900">{tier.name}</Text>
-          <Text className="text-xs text-ink-500 mt-0.5">
-            {tier.next
-              ? `距下一级还差 RM ${(tier.next - totalSpent).toFixed(0)}`
-              : '已是最高等级'}
-          </Text>
-        </View>
-        <Text className="text-xs text-ink-400">累计 RM {totalSpent.toFixed(0)}</Text>
-      </View>
-      <View className="h-2 bg-ink-100 rounded-full overflow-hidden">
-        <View
-          className="h-2 bg-brand-500 rounded-full"
-          style={{ width: `${progress}%` }}
-        />
-      </View>
-    </View>
-  )
-}
-
-function Row({
-  icon,
-  label,
-  subtitle,
-  onPress,
-  disabled,
-}: {
-  icon: string;
-  label: string;
-  subtitle?: string;
-  onPress?: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled || !onPress}
-      className={`flex-row items-center px-4 py-3.5 ${onPress && !disabled ? 'active:bg-ink-50' : ''}`}
-    >
-      <Text className="text-xl mr-3">{icon}</Text>
-      <View className="flex-1">
-        <Text className={`text-base ${disabled ? 'text-ink-400' : 'text-ink-900'}`}>{label}</Text>
-        {subtitle ? <Text className="text-xs text-ink-400 mt-0.5">{subtitle}</Text> : null}
-      </View>
-      {onPress && !disabled && <Text className="text-ink-300 text-lg">›</Text>}
-    </Pressable>
-  );
-}
-
-function Divider() {
-  return <View className="h-px bg-ink-100 ml-12" />;
 }

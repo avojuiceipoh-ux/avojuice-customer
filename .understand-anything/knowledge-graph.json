@@ -1,0 +1,1108 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "customer-app",
+    "languages": [
+      "typescript",
+      "javascript",
+      "json",
+      "css"
+    ],
+    "frameworks": [
+      "Expo",
+      "React Native",
+      "NativeWind",
+      "Expo Router",
+      "TanStack React Query",
+      "Axios"
+    ],
+    "description": "Avo Juice 顾客端 App — Expo 54 + React Native 0.81 + NativeWind 4 打造的果饮外卖应用",
+    "analyzedAt": "2026-05-24T17:37:09Z",
+    "gitCommitHash": "5f2ae2a50ae6e6bcbafad8c87a76da69b305469c"
+  },
+  "nodes": [
+    {
+      "id": "file:app/_layout.tsx",
+      "type": "file",
+      "name": "_layout",
+      "filePath": "app/_layout.tsx",
+      "summary": "根布局组件，包装所有页面，设置 Expo Router 导航栈和全局 Provider",
+      "tags": [],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/(tabs)/_layout.tsx",
+      "type": "file",
+      "name": "_layout",
+      "filePath": "app/(tabs)/_layout.tsx",
+      "summary": "Tab 导航布局，定义首页/菜单/订单/我的四个标签页",
+      "tags": [
+        "Tab页面"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/(tabs)/home.tsx",
+      "type": "file",
+      "name": "home",
+      "filePath": "app/(tabs)/home.tsx",
+      "summary": "首页：海报轮播、热门产品推荐、快速入口",
+      "tags": [
+        "Tab页面"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/(tabs)/menu.tsx",
+      "type": "file",
+      "name": "menu",
+      "filePath": "app/(tabs)/menu.tsx",
+      "summary": "菜单页：分类筛选、产品列表、加入购物车",
+      "tags": [
+        "Tab页面"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/(tabs)/orders.tsx",
+      "type": "file",
+      "name": "orders",
+      "filePath": "app/(tabs)/orders.tsx",
+      "summary": "订单页：订单列表、状态筛选",
+      "tags": [
+        "Tab页面"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/(tabs)/profile.tsx",
+      "type": "file",
+      "name": "profile",
+      "filePath": "app/(tabs)/profile.tsx",
+      "summary": "我的页面：用户信息、钱包入口、优惠券、会员",
+      "tags": [
+        "Tab页面"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/index.tsx",
+      "type": "file",
+      "name": "index",
+      "filePath": "app/index.tsx",
+      "summary": "启动/登录引导页",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/auth/login.tsx",
+      "type": "file",
+      "name": "login",
+      "filePath": "app/auth/login.tsx",
+      "summary": "手机号登录页面",
+      "tags": [
+        "认证"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/auth/verify.tsx",
+      "type": "file",
+      "name": "verify",
+      "filePath": "app/auth/verify.tsx",
+      "summary": "短信验证码验证页面",
+      "tags": [
+        "认证"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/cart.tsx",
+      "type": "file",
+      "name": "cart",
+      "filePath": "app/cart.tsx",
+      "summary": "购物车页面",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/checkout.tsx",
+      "type": "file",
+      "name": "checkout",
+      "filePath": "app/checkout.tsx",
+      "summary": "结算页面",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/favorites.tsx",
+      "type": "file",
+      "name": "favorites",
+      "filePath": "app/favorites.tsx",
+      "summary": "收藏夹页面",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/locations.tsx",
+      "type": "file",
+      "name": "locations",
+      "filePath": "app/locations.tsx",
+      "summary": "每日营业地点页面",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/membership.tsx",
+      "type": "file",
+      "name": "membership",
+      "filePath": "app/membership.tsx",
+      "summary": "会员页面：四级横滑",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/order/[id].tsx",
+      "type": "file",
+      "name": "[id]",
+      "filePath": "app/order/[id].tsx",
+      "summary": "订单详情页",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/personal.tsx",
+      "type": "file",
+      "name": "personal",
+      "filePath": "app/personal.tsx",
+      "summary": "个人资料编辑页",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/product/[id].tsx",
+      "type": "file",
+      "name": "[id]",
+      "filePath": "app/product/[id].tsx",
+      "summary": "产品详情页",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/reward.tsx",
+      "type": "file",
+      "name": "reward",
+      "filePath": "app/reward.tsx",
+      "summary": "推荐奖励页",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/vouchers.tsx",
+      "type": "file",
+      "name": "vouchers",
+      "filePath": "app/vouchers.tsx",
+      "summary": "优惠券页面",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/wallet.tsx",
+      "type": "file",
+      "name": "wallet",
+      "filePath": "app/wallet.tsx",
+      "summary": "钱包页面：余额、储值",
+      "tags": [],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/Button.tsx",
+      "type": "file",
+      "name": "Button",
+      "filePath": "src/components/Button.tsx",
+      "summary": "通用按钮组件",
+      "tags": [
+        "组件"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/FruitInfo.tsx",
+      "type": "file",
+      "name": "FruitInfo",
+      "filePath": "src/components/FruitInfo.tsx",
+      "summary": "水果营养信息展示",
+      "tags": [
+        "组件"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/PressableOpacity.tsx",
+      "type": "file",
+      "name": "PressableOpacity",
+      "filePath": "src/components/PressableOpacity.tsx",
+      "summary": "可按下透明反馈容器",
+      "tags": [
+        "组件"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/ProductSheet.tsx",
+      "type": "file",
+      "name": "ProductSheet",
+      "filePath": "src/components/ProductSheet.tsx",
+      "summary": "产品详情底部弹出面板",
+      "tags": [
+        "组件"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/Screen.tsx",
+      "type": "file",
+      "name": "Screen",
+      "filePath": "src/components/Screen.tsx",
+      "summary": "通用页面容器 SafeAreaView",
+      "tags": [
+        "组件"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/Skeleton.tsx",
+      "type": "file",
+      "name": "Skeleton",
+      "filePath": "src/components/Skeleton.tsx",
+      "summary": "骨架屏加载占位",
+      "tags": [
+        "组件"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/VoucherWonModal.tsx",
+      "type": "file",
+      "name": "VoucherWonModal",
+      "filePath": "src/components/VoucherWonModal.tsx",
+      "summary": "获得优惠券弹窗",
+      "tags": [
+        "组件"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/api/client.ts",
+      "type": "file",
+      "name": "client",
+      "filePath": "src/api/client.ts",
+      "summary": "Axios HTTP 客户端，token 注入、错误处理",
+      "tags": [
+        "API"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/api/auth.ts",
+      "type": "file",
+      "name": "auth",
+      "filePath": "src/api/auth.ts",
+      "summary": "认证 API",
+      "tags": [
+        "认证",
+        "API"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/api/products.ts",
+      "type": "file",
+      "name": "products",
+      "filePath": "src/api/products.ts",
+      "summary": "产品 API",
+      "tags": [
+        "API"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/api/orders.ts",
+      "type": "file",
+      "name": "orders",
+      "filePath": "src/api/orders.ts",
+      "summary": "订单 API",
+      "tags": [
+        "API"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/api/favorites.ts",
+      "type": "file",
+      "name": "favorites",
+      "filePath": "src/api/favorites.ts",
+      "summary": "收藏 API",
+      "tags": [
+        "API"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/api/wallet.ts",
+      "type": "file",
+      "name": "wallet",
+      "filePath": "src/api/wallet.ts",
+      "summary": "钱包 API",
+      "tags": [
+        "API"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/store/auth.ts",
+      "type": "file",
+      "name": "auth",
+      "filePath": "src/store/auth.ts",
+      "summary": "认证状态管理",
+      "tags": [
+        "认证",
+        "状态管理"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/store/cart.ts",
+      "type": "file",
+      "name": "cart",
+      "filePath": "src/store/cart.ts",
+      "summary": "购物车状态管理",
+      "tags": [
+        "状态管理"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/env.ts",
+      "type": "file",
+      "name": "env",
+      "filePath": "src/lib/env.ts",
+      "summary": "环境变量管理",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/push.ts",
+      "type": "file",
+      "name": "push",
+      "filePath": "src/lib/push.ts",
+      "summary": "推送通知",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/queryClient.ts",
+      "type": "file",
+      "name": "queryClient",
+      "filePath": "src/lib/queryClient.ts",
+      "summary": "React Query 配置",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/sentry.ts",
+      "type": "file",
+      "name": "sentry",
+      "filePath": "src/lib/sentry.ts",
+      "summary": "Sentry 错误监控",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/storage.ts",
+      "type": "file",
+      "name": "storage",
+      "filePath": "src/lib/storage.ts",
+      "summary": "AsyncStorage 封装",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/theme.ts",
+      "type": "file",
+      "name": "theme",
+      "filePath": "src/lib/theme.ts",
+      "summary": "主题色定义，牛油果绿主色",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:App.tsx",
+      "type": "file",
+      "name": "App",
+      "filePath": "App.tsx",
+      "summary": "应用入口组件",
+      "tags": [],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:index.ts",
+      "type": "file",
+      "name": "index",
+      "filePath": "index.ts",
+      "summary": "Expo Router 入口注册",
+      "tags": [],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:app.json",
+      "type": "config",
+      "name": "appon",
+      "filePath": "app.json",
+      "summary": "Expo 应用配置",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "packageon",
+      "filePath": "package.json",
+      "summary": "项目依赖配置",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfigon",
+      "filePath": "tsconfig.json",
+      "summary": "TypeScript 编译配置",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:babel.config.js",
+      "type": "file",
+      "name": "babel.config",
+      "filePath": "babel.config.js",
+      "summary": "Babel 配置",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:metro.config.js",
+      "type": "file",
+      "name": "metro.config",
+      "filePath": "metro.config.js",
+      "summary": "Metro 打包器配置",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tailwind.config.js",
+      "type": "file",
+      "name": "tailwind.config",
+      "filePath": "tailwind.config.js",
+      "summary": "TailwindCSS 主题配置",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:global.css",
+      "type": "file",
+      "name": "global.css",
+      "filePath": "global.css",
+      "summary": "全局 CSS",
+      "tags": [
+        "基础设施"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:app/(tabs)/home.tsx",
+      "target": "file:src/components/Skeleton.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/menu.tsx",
+      "target": "file:src/components/Skeleton.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/orders.tsx",
+      "target": "file:src/components/Skeleton.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/product/[id].tsx",
+      "target": "file:src/components/ProductSheet.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/product/[id].tsx",
+      "target": "file:src/components/FruitInfo.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/product/[id].tsx",
+      "target": "file:src/components/Button.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/cart.tsx",
+      "target": "file:src/components/Button.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/checkout.tsx",
+      "target": "file:src/components/Button.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/wallet.tsx",
+      "target": "file:src/components/Button.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/personal.tsx",
+      "target": "file:src/components/Button.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:src/components/Button.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/home.tsx",
+      "target": "file:src/api/products.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/menu.tsx",
+      "target": "file:src/api/products.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/orders.tsx",
+      "target": "file:src/api/orders.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:src/api/auth.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/auth/login.tsx",
+      "target": "file:src/api/auth.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/auth/verify.tsx",
+      "target": "file:src/api/auth.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/cart.tsx",
+      "target": "file:src/api/orders.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/checkout.tsx",
+      "target": "file:src/api/orders.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/favorites.tsx",
+      "target": "file:src/api/favorites.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/wallet.tsx",
+      "target": "file:src/api/wallet.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/product/[id].tsx",
+      "target": "file:src/api/products.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/order/[id].tsx",
+      "target": "file:src/api/orders.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/api/auth.ts",
+      "target": "file:src/api/client.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/api/products.ts",
+      "target": "file:src/api/client.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/api/orders.ts",
+      "target": "file:src/api/client.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/api/favorites.ts",
+      "target": "file:src/api/client.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/api/wallet.ts",
+      "target": "file:src/api/client.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/store/auth.ts",
+      "target": "file:src/lib/storage.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/store/cart.ts",
+      "target": "file:src/lib/storage.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/_layout.tsx",
+      "target": "file:src/store/auth.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:src/store/auth.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/home.tsx",
+      "target": "file:src/store/cart.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/menu.tsx",
+      "target": "file:src/store/cart.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/cart.tsx",
+      "target": "file:src/store/cart.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/checkout.tsx",
+      "target": "file:src/store/cart.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/product/[id].tsx",
+      "target": "file:src/store/cart.ts",
+      "type": "depends_on",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.tsx",
+      "target": "file:app/_layout.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:index.ts",
+      "target": "file:App.tsx",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/_layout.tsx",
+      "target": "file:app/(tabs)/_layout.tsx",
+      "type": "contains",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/_layout.tsx",
+      "target": "file:app/(tabs)/home.tsx",
+      "type": "contains",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/_layout.tsx",
+      "target": "file:app/(tabs)/menu.tsx",
+      "type": "contains",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/_layout.tsx",
+      "target": "file:app/(tabs)/orders.tsx",
+      "type": "contains",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/_layout.tsx",
+      "target": "file:app/(tabs)/profile.tsx",
+      "type": "contains",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/home.tsx",
+      "target": "file:app/product/[id].tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/home.tsx",
+      "target": "file:app/wallet.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/menu.tsx",
+      "target": "file:app/product/[id].tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/menu.tsx",
+      "target": "file:app/cart.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:app/wallet.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:app/vouchers.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:app/membership.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:app/personal.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:app/reward.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:app/favorites.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/profile.tsx",
+      "target": "file:app/locations.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/cart.tsx",
+      "target": "file:app/checkout.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/(tabs)/orders.tsx",
+      "target": "file:app/order/[id].tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/index.tsx",
+      "target": "file:app/auth/login.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/index.tsx",
+      "target": "file:app/(tabs)/home.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/auth/login.tsx",
+      "target": "file:app/auth/verify.tsx",
+      "type": "routes",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/_layout.tsx",
+      "target": "file:src/lib/theme.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:App.tsx",
+      "target": "file:global.css",
+      "type": "imports",
+      "weight": 0.7
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:entry",
+      "name": "入口层",
+      "description": "应用启动和路由入口",
+      "nodeIds": [
+        "file:App.tsx",
+        "file:index.ts"
+      ]
+    },
+    {
+      "id": "layer:router",
+      "name": "路由层",
+      "description": "Expo Router 导航布局",
+      "nodeIds": [
+        "file:app/_layout.tsx",
+        "file:app/(tabs)/_layout.tsx"
+      ]
+    },
+    {
+      "id": "layer:ui",
+      "name": "页面层",
+      "description": "用户界面页面和堆叠页",
+      "nodeIds": [
+        "file:app/(tabs)/home.tsx",
+        "file:app/(tabs)/menu.tsx",
+        "file:app/(tabs)/orders.tsx",
+        "file:app/(tabs)/profile.tsx",
+        "file:app/index.tsx",
+        "file:app/auth/login.tsx",
+        "file:app/auth/verify.tsx",
+        "file:app/cart.tsx",
+        "file:app/checkout.tsx",
+        "file:app/favorites.tsx",
+        "file:app/locations.tsx",
+        "file:app/membership.tsx",
+        "file:app/order/[id].tsx",
+        "file:app/personal.tsx",
+        "file:app/product/[id].tsx",
+        "file:app/reward.tsx",
+        "file:app/vouchers.tsx",
+        "file:app/wallet.tsx"
+      ]
+    },
+    {
+      "id": "layer:components",
+      "name": "组件层",
+      "description": "可复用 UI 组件",
+      "nodeIds": [
+        "file:src/components/Button.tsx",
+        "file:src/components/FruitInfo.tsx",
+        "file:src/components/PressableOpacity.tsx",
+        "file:src/components/ProductSheet.tsx",
+        "file:src/components/Screen.tsx",
+        "file:src/components/Skeleton.tsx",
+        "file:src/components/VoucherWonModal.tsx"
+      ]
+    },
+    {
+      "id": "layer:api",
+      "name": "API 层",
+      "description": "HTTP 客户端和接口调用",
+      "nodeIds": [
+        "file:src/api/client.ts",
+        "file:src/api/auth.ts",
+        "file:src/api/products.ts",
+        "file:src/api/orders.ts",
+        "file:src/api/favorites.ts",
+        "file:src/api/wallet.ts"
+      ]
+    },
+    {
+      "id": "layer:state",
+      "name": "状态层",
+      "description": "Zustand 状态管理",
+      "nodeIds": [
+        "file:src/store/auth.ts",
+        "file:src/store/cart.ts"
+      ]
+    },
+    {
+      "id": "layer:utils",
+      "name": "工具层",
+      "description": "通用工具库（主题/存储/推送/监控）",
+      "nodeIds": [
+        "file:src/lib/env.ts",
+        "file:src/lib/push.ts",
+        "file:src/lib/queryClient.ts",
+        "file:src/lib/sentry.ts",
+        "file:src/lib/storage.ts",
+        "file:src/lib/theme.ts"
+      ]
+    },
+    {
+      "id": "layer:config",
+      "name": "配置层",
+      "description": "项目配置文件",
+      "nodeIds": [
+        "config:app.json",
+        "config:package.json",
+        "config:tsconfig.json",
+        "file:babel.config.js",
+        "file:metro.config.js",
+        "file:tailwind.config.js",
+        "file:global.css"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "项目概览",
+      "description": "Avo Juice 顾客端 — Expo 54 + React Native 打造的果饮外卖 App。从 package.json 和 app.json 开始了解技术栈。",
+      "nodeIds": [
+        "config:package.json",
+        "config:app.json"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "应用入口",
+      "description": "index.ts → App.tsx → app/_layout.tsx，理解应用的启动流程和全局 Provider 设置。",
+      "nodeIds": [
+        "file:index.ts",
+        "file:App.tsx",
+        "file:app/_layout.tsx"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Tab 导航",
+      "description": "四个主标签页：首页、菜单、订单、我的。Expo Router 的文件系统路由。",
+      "nodeIds": [
+        "file:app/(tabs)/_layout.tsx",
+        "file:app/(tabs)/home.tsx",
+        "file:app/(tabs)/menu.tsx",
+        "file:app/(tabs)/orders.tsx",
+        "file:app/(tabs)/profile.tsx"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "核心页面",
+      "description": "Stack 导航中的子页面：购物车、结算、产品详情、钱包、优惠券、会员等。",
+      "nodeIds": [
+        "file:app/cart.tsx",
+        "file:app/checkout.tsx",
+        "file:app/product/[id].tsx",
+        "file:app/wallet.tsx",
+        "file:app/vouchers.tsx",
+        "file:app/membership.tsx"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "API 层",
+      "description": "Axios 客户端封装 + 各业务模块 API。所有网络请求经 client.ts 统一处理 token 和错误。",
+      "nodeIds": [
+        "file:src/api/client.ts",
+        "file:src/api/auth.ts",
+        "file:src/api/products.ts",
+        "file:src/api/orders.ts",
+        "file:src/api/wallet.ts"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "状态管理",
+      "description": "Zustand store：auth（认证状态）和 cart（购物车），持久化到 AsyncStorage。",
+      "nodeIds": [
+        "file:src/store/auth.ts",
+        "file:src/store/cart.ts",
+        "file:src/lib/storage.ts"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "UI 组件库",
+      "description": "可复用组件：Button、ProductSheet、Skeleton、VoucherWonModal 等。",
+      "nodeIds": [
+        "file:src/components/Button.tsx",
+        "file:src/components/ProductSheet.tsx",
+        "file:src/components/Skeleton.tsx",
+        "file:src/components/VoucherWonModal.tsx"
+      ]
+    }
+  ]
+}
