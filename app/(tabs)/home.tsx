@@ -43,6 +43,17 @@ export default function HomeScreen() {
   const cupsToNext = walletData?.cups_to_next_reward ?? 10;
   const walletBalance = walletData?.wallet_balance ?? 0;
   const voucherCount = walletData?.free_voucher_count ?? 0;
+
+  // 会员等级 — 根据真实杯数计算，与 membership/profile 完全同步
+  const tiers = [
+    { min: 0,   name: '爱·初芽' },
+    { min: 15,  name: '我·成长' },
+    { min: 90,  name: '果·绽放' },
+    { min: 300, name: '饮·圆满' },
+  ];
+  const currentTier = [...tiers].reverse().find(t => cups >= t.min) || tiers[0];
+  const tierName = currentTier.name;
+
   const userName = user?.nickname || 'Guest';
   const referralCode = 'AVOJUICE88';
 
@@ -153,7 +164,7 @@ export default function HomeScreen() {
                   className="text-[10px] font-bold"
                   style={{ color: isDark ? '#d4d4d4' : '#4a7c20' }}
                 >
-                  🥑 会员
+                  {tierName}
                 </Text>
               </View>
               <Text
@@ -164,22 +175,15 @@ export default function HomeScreen() {
               </Text>
             </View>
 
-            <View className="flex-row items-baseline gap-1 mt-1">
-              <CupSoda size={18} color={isDark ? '#a3c97a' : '#4a7c20'} />
+            <View className="flex-row items-center mt-1">
               <Text
                 className="text-3xl font-extrabold"
                 style={{ color: isDark ? '#e8f5e0' : '#3d6b1e' }}
               >
                 {cups}
               </Text>
+              <CupSoda size={22} color={isDark ? '#a3c97a' : '#4a7c20'} style={{ marginLeft: 4 }} />
             </View>
-            <Text
-              className="text-[10px]"
-              style={{ color: isDark ? '#a3a3a3' : '#6b8f3a' }}
-            >
-              累计杯数
-            </Text>
-
             {/* 进度条 */}
             <View className="mt-2">
               <View

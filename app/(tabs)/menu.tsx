@@ -189,9 +189,10 @@ function ProductRow({
             <Text className="text-base font-semibold text-ink-900" numberOfLines={1}>
               {product.name_cn}
             </Text>
-            {product.description ? (
+            {/* 简短描述（V2）优先；fallback 到长描述（V1 兼容） */}
+            {(product.short_desc || product.description) ? (
               <Text className="text-xs text-ink-500 mt-1" numberOfLines={2}>
-                {product.description}
+                {product.short_desc || product.description}
               </Text>
             ) : null}
             <FruitInfoInline items={product.fruit_info} />

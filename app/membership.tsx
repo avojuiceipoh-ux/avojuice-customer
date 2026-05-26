@@ -2,7 +2,8 @@ import { View, Text, ScrollView, Pressable, Dimensions, NativeSyntheticEvent, Na
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Crown, CupSoda, Check, Star } from 'lucide-react-native';
 import { router } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '../src/lib/theme';
 import { useAuthStore } from '../src/store/auth';
 import { walletApi } from '../src/api/wallet';
@@ -63,28 +64,42 @@ const TIERS = [
 export default function MembershipScreen() {
   const { isDark } = useTheme();
   const user = useAuthStore(s => s.user);
+  const isAuthed = !!useAuthStore(s => s.token);
 
-  const [walletCups, setWalletCups] = useState<number | null>(null);
+  // 用 useQuery 共享 cache：从 home / wallet 进来如果已经拉过，立即就有数据，不再闪到 tier 1
+  const { data: walletData, isLoading } = useQuery({
+    queryKey: ['wallet'],
+    queryFn: () => walletApi.get(),
+    enabled: isAuthed,
+  });
 
-  useEffect(() => {
-    walletApi.get().then(res => {
-      setWalletCups(res.cups_total);
-    }).catch(() => {});
-  }, []);
+  // 数据"已知" = 已经从后端拿到了；未知时不渲染 My Tier 角标，避免误导
+  const isLoaded = !!walletData;
+  const currentCups = walletData?.cups_total ?? 0;
 
-  const currentCups = walletCups ?? 0;
   // 计算当前等级
   const currentTier = [...TIERS].reverse().find(t => currentCups >= t.min) || TIERS[0];
-  const nextTierIdx = TIERS.indexOf(currentTier) + 1;
+  const currentTierIdx = TIERS.indexOf(currentTier);
+  const nextTierIdx = currentTierIdx + 1;
   const nextTier = TIERS[nextTierIdx] || null;
   const cupsToNext = nextTier ? nextTier.min - currentCups : 0;
+
   const bg = isDark ? '#171717' : '#f5f8f0';
   const cardBg = isDark ? '#262626' : '#fff';
   const text = isDark ? '#fafafa' : '#1a1a1a';
   const sub = isDark ? '#a3a3a3' : '#737373';
 
   const screenW = Dimensions.get('window').width;
-  const [active, setActive] = useState(1); // 默认「我·成长」
+  const scrollRef = useRef<ScrollView>(null);
+  const [active, setActive] = useState(currentTierIdx); // 初始默认用 currentTierIdx（未登录时 = 0）
+
+  // 数据加载完成后，自动滚到用户当前等级的卡片
+  useEffect(() => {
+    if (isLoaded && scrollRef.current) {
+      scrollRef.current.scrollTo({ x: currentTierIdx * screenW, animated: true });
+      setActive(currentTierIdx);
+    }
+  }, [isLoaded, currentTierIdx, screenW]);
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const idx = Math.round(e.nativeEvent.contentOffset.x / screenW);
@@ -105,7 +120,7 @@ export default function MembershipScreen() {
         <Text style={{ color: text }} className="text-2xl font-bold">会员等级</Text>
       </View>
 
-      {/* 当前杯数提示 */}
+      {/* 当前杯数提示 — 加载完才显具体数字，避免闪烁 */}
       <View className="px-5 mb-3">
         <View
           className="rounded-xl px-4 py-2.5 flex-row items-center"
@@ -113,13 +128,22 @@ export default function MembershipScreen() {
         >
           <CupSoda size={16} color="#649b29" />
           <Text style={{ color: '#649b29' }} className="text-sm font-semibold ml-2">
-            当前杯数：{currentCups} · {cupsToNext > 0 ? `再集 ${cupsToNext} 杯升级「${nextTier?.name}」` : '已达最高等级 🎉'}
+            {!isAuthed
+              ? '登录查看你的等级'
+              : !isLoaded
+              ? '加载中...'
+              : `当前杯数：${currentCups} · ${
+                  cupsToNext > 0
+                    ? `再集 ${cupsToNext} 杯升级「${nextTier?.name}」`
+                    : '已达最高等级 🎉'
+                }`}
           </Text>
         </View>
       </View>
 
       {/* 四级横滑 */}
       <ScrollView
+        ref={scrollRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
@@ -141,8 +165,8 @@ export default function MembershipScreen() {
                 overflow: 'visible',
               }}
             >
-              {/* My Tier 角标 */}
-              {tier.name === currentTier.name && (
+              {/* My Tier 角标 — 仅在数据加载完成后显示，避免误贴到 tier 1 */}
+              {isLoaded && tier.name === currentTier.name && (
                 <View
                   className="absolute top-4 left-4 rounded-full px-3 py-0.5 flex-row items-center"
                   style={{ backgroundColor: tier.color }}

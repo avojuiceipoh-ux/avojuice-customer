@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -7,6 +7,7 @@ import {
 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useTheme } from '../../src/lib/theme';
+import { walletApi } from '../../src/api/wallet';
 
 export default function ProfileScreen() {
   const { isDark } = useTheme();
@@ -21,10 +22,32 @@ export default function ProfileScreen() {
   const userName = 'Andrew Heng';
   const phoneNum = '012-345 6789';
   const avatarUrl = null;
-  const points = 13;
-  const walletBalance = 15.50;
-  const voucherCount = 3;
-  const cashbackAmount = 5.20;
+
+  // 从 wallet API 获取真实杯数 / 余额 / 券数
+  const [walletData, setWalletData] = useState<{
+    cups_total: number;
+    cups_progress: number;
+    cups_to_next_reward: number;
+    wallet_balance: number;
+    free_voucher_count: number;
+  } | null>(null);
+
+  useEffect(() => {
+    walletApi.get().then(res => {
+      setWalletData({
+        cups_total: res.cups_total,
+        cups_progress: res.cups_progress,
+        cups_to_next_reward: res.cups_to_next_reward,
+        wallet_balance: Number(res.wallet.balance),
+        free_voucher_count: res.free_voucher_count,
+      });
+    }).catch(() => {});
+  }, []);
+
+  const points = walletData?.cups_total ?? 0;
+  const walletBalance = walletData?.wallet_balance ?? 0;
+  const voucherCount = walletData?.free_voucher_count ?? 0;
+  const cashbackAmount = 0; // TODO: 后台 reward API 后接入
 
   // 会员等级系统 — 四级：爱·初芽 → 我·成长 → 果·绽放 → 饮·圆满
   // 颜色与 membership 页面统一
