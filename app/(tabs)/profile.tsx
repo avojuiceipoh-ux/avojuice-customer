@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Bell, ChevronRight, Crown, Wallet, Ticket,
   Settings, Phone, Camera, DollarSign,
 } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '../../src/lib/theme';
 import { walletApi } from '../../src/api/wallet';
+import { bannersApi, type Banner } from '../../src/api/banners';
 
 export default function ProfileScreen() {
   const { isDark } = useTheme();
@@ -66,7 +68,7 @@ export default function ProfileScreen() {
   const nextTier = nextTierInfo?.min ?? currentTier.min;
   const pointsToNext = nextTierInfo ? nextTier - points : 0;
 
-  // 海报轮播
+  // 海报轮播 — 后台配的图片，空就整段不显示
   const screenW = Dimensions.get('window').width;
   const [bannerIdx, setBannerIdx] = useState(0);
   const bannerW = Math.min(screenW * 0.85, 400);
@@ -74,14 +76,21 @@ export default function ProfileScreen() {
   const bannerGap = 10;
   const bannerSnap = bannerW + bannerGap;
   const sidePad = (screenW - bannerW) / 2;
-  const banners = [
-    { emoji: '🥑', title: '牛油果季特惠', desc: '全系列牛油果 RM2 OFF', color: '#649b29' },
-    { emoji: '🎓', title: '学生专享', desc: '凭学生证享 9 折优惠', color: isDark ? '#4ade80' : '#16a34a' },
-    { emoji: '🎉', title: '新品上市', desc: '火龙果椰奶冰沙尝鲜价', color: isDark ? '#f87171' : '#dc2626' },
-  ];
+
+  const { data: banners = [] } = useQuery({
+    queryKey: ['banners', 'profile'],
+    queryFn: () => bannersApi.list('profile'),
+    staleTime: 5 * 60 * 1000,
+  });
 
   const onBannerScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     setBannerIdx(Math.round(e.nativeEvent.contentOffset.x / bannerSnap));
+  };
+
+  const onBannerPress = (b: Banner) => {
+    if (!b.link_type || b.link_type === 'none' || !b.link_value) return;
+    if (b.link_type === 'product')  router.push(`/product/${b.link_value}`);
+    else if (b.link_type === 'url') Linking.openURL(b.link_value).catch(() => {});
   };
 
   return (
@@ -202,58 +211,61 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
-        {/* 海报 */}
-        <View className="mt-4">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            decelerationRate="fast"
-            snapToInterval={bannerSnap}
-            snapToAlignment="center"
-            onMomentumScrollEnd={onBannerScroll}
-            contentContainerStyle={{ paddingHorizontal: sidePad, gap: bannerGap }}
-          >
-            {banners.map((item, i) => (
-              <Pressable key={i}>
-                {({ pressed }) => (
-                  <View
-                    className="rounded-2xl px-5 flex-row items-center"
-                    style={{
-                      width: bannerW,
-                      height: bannerH,
-                      backgroundColor: item.color,
-                      shadowColor: item.color,
-                      shadowOpacity: 0.3,
-                      shadowRadius: 10,
-                      shadowOffset: { width: 0, height: 4 },
-                      opacity: pressed ? 0.7 : 1,
-                    }}
+        {/* 海报 — 后台配的图，空就不渲染 */}
+        {banners.length > 0 && (
+          <View className="mt-4">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              decelerationRate="fast"
+              snapToInterval={bannerSnap}
+              snapToAlignment="center"
+              onMomentumScrollEnd={onBannerScroll}
+              contentContainerStyle={{ paddingHorizontal: sidePad, gap: bannerGap }}
+            >
+              {banners.map((item) => {
+                const clickable = item.link_type && item.link_type !== 'none' && item.link_value;
+                return (
+                  <Pressable
+                    key={item.id}
+                    disabled={!clickable}
+                    onPress={() => onBannerPress(item)}
                   >
-                    <Text className="text-4xl mr-4">{item.emoji}</Text>
-                    <View className="flex-1">
-                      <Text className="text-white text-lg font-bold">{item.title}</Text>
-                      <Text className="text-white/80 text-sm mt-0.5">{item.desc}</Text>
-                    </View>
-                  </View>
-                )}
-              </Pressable>
-            ))}
-          </ScrollView>
+                    {({ pressed }) => (
+                      <Image
+                        source={{ uri: item.image_url }}
+                        style={{
+                          width: bannerW,
+                          height: bannerH,
+                          borderRadius: 16,
+                          opacity: pressed ? 0.85 : 1,
+                          backgroundColor: isDark ? '#262626' : '#e8f5e0',
+                        }}
+                        resizeMode="cover"
+                      />
+                    )}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
 
-          <View className="flex-row justify-center mt-3" style={{ gap: 6 }}>
-            {banners.map((_, i) => (
-              <View
-                key={i}
-                className="rounded-full"
-                style={{
-                  width: i === bannerIdx ? 18 : 6,
-                  height: 6,
-                  backgroundColor: i === bannerIdx ? '#649b29' : (isDark ? '#525252' : '#d4d4d4'),
-                }}
-              />
-            ))}
+            {banners.length > 1 && (
+              <View className="flex-row justify-center mt-3" style={{ gap: 6 }}>
+                {banners.map((_, i) => (
+                  <View
+                    key={i}
+                    className="rounded-full"
+                    style={{
+                      width: i === bannerIdx ? 18 : 6,
+                      height: 6,
+                      backgroundColor: i === bannerIdx ? '#649b29' : (isDark ? '#525252' : '#d4d4d4'),
+                    }}
+                  />
+                ))}
+              </View>
+            )}
           </View>
-        </View>
+        )}
 
         {/* 设置 */}
         <View className="px-5 mt-5">

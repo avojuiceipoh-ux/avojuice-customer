@@ -1,11 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Linking } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, ChevronRight, Copy, Wallet, MapPin, CupSoda } from 'lucide-react-native';
+import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '../../src/lib/theme';
 import { useAuthStore } from '../../src/store/auth';
 import { walletApi } from '../../src/api/wallet';
+import { bannersApi, type Banner } from '../../src/api/banners';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_GAP = 12;
@@ -55,14 +57,22 @@ export default function HomeScreen() {
   const tierName = currentTier.name;
 
   const userName = user?.nickname || 'Guest';
-  const referralCode = 'AVOJUICE88';
+  // 邀请码：登录后用真实的 user.referral_code，未登录显示占位
+  const referralCode = user?.referral_code ?? '暂未生成';
 
-  // 促销海报数据
-  const banners = [
-    { id: '1', title: '🥑 牛油果季特惠', subtitle: '全系列 RM2 OFF', color: '#4a7c20', tag: '限时' },
-    { id: '2', title: '🆕 火龙果气泡', subtitle: '新品上市 · 尝鲜价 RM5', color: '#c2415c', tag: '新品' },
-    { id: '3', title: '🎓 学生专属', subtitle: '凭学生证减 RM1', color: '#2563eb', tag: '福利' },
-  ];
+  // 促销海报 — 从后台拉，空数组就隐藏整个区块
+  const { data: banners = [] } = useQuery({
+    queryKey: ['banners', 'home'],
+    queryFn: () => bannersApi.list('home'),
+    staleTime: 5 * 60 * 1000, // 5 min
+  });
+
+  const onBannerPress = (b: Banner) => {
+    if (!b.link_type || b.link_type === 'none' || !b.link_value) return;
+    if (b.link_type === 'product')  router.push(`/product/${b.link_value}`);
+    else if (b.link_type === 'url') Linking.openURL(b.link_value).catch(() => {});
+    // category 跳菜单页时再扩展
+  };
 
   // 营业地点
   const dayNames = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
@@ -205,76 +215,66 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* ── 促销海报 — 大正方形可左右滑动 ── */}
-        <View className="px-5 mt-4">
-          <View className="flex-row items-center justify-between mb-3">
-            <Text style={{ color: text }} className="text-base font-bold">
-              🔥 促销活动
-            </Text>
-            {/* 页码指示器 */}
-            <View className="flex-row" style={{ gap: 4 }}>
-              {banners.map((_, i) => (
-                <View
-                  key={i}
-                  className="rounded-full"
-                  style={{
-                    width: i === activeSlide ? 16 : 6,
-                    height: 6,
-                    backgroundColor: i === activeSlide ? '#649b29' : (isDark ? '#404040' : '#d4d4d4'),
-                  }}
-                />
-              ))}
+        {/* ── 促销海报 — 后台配的图片，空就不显示 ── */}
+        {banners.length > 0 && (
+          <View className="px-5 mt-4">
+            <View className="flex-row items-center justify-between mb-3">
+              <Text style={{ color: text }} className="text-base font-bold">
+                🔥 促销活动
+              </Text>
+              {banners.length > 1 && (
+                <View className="flex-row" style={{ gap: 4 }}>
+                  {banners.map((_, i) => (
+                    <View
+                      key={i}
+                      className="rounded-full"
+                      style={{
+                        width: i === activeSlide ? 16 : 6,
+                        height: 6,
+                        backgroundColor: i === activeSlide ? '#649b29' : (isDark ? '#404040' : '#d4d4d4'),
+                      }}
+                    />
+                  ))}
+                </View>
+              )}
             </View>
+
+            <ScrollView
+              ref={carouselRef}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled
+              snapToInterval={CARD_WIDTH + CARD_GAP}
+              decelerationRate="fast"
+              onScroll={onScroll}
+              scrollEventThrottle={16}
+              contentContainerStyle={{ paddingRight: CARD_GAP }}
+            >
+              {banners.map((banner) => {
+                const clickable = banner.link_type && banner.link_type !== 'none' && banner.link_value;
+                return (
+                  <Pressable
+                    key={banner.id}
+                    disabled={!clickable}
+                    onPress={() => onBannerPress(banner)}
+                    style={{ marginRight: CARD_GAP }}
+                  >
+                    <Image
+                      source={{ uri: banner.image_url }}
+                      style={{
+                        width: CARD_WIDTH,
+                        height: CARD_WIDTH * 0.5, // 16:8 比例
+                        borderRadius: 24,
+                        backgroundColor: isDark ? '#262626' : '#e8f5e0',
+                      }}
+                      resizeMode="cover"
+                    />
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           </View>
-
-          <ScrollView
-            ref={carouselRef}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled
-            snapToInterval={CARD_WIDTH + CARD_GAP}
-            decelerationRate="fast"
-            onScroll={onScroll}
-            scrollEventThrottle={16}
-            contentContainerStyle={{ paddingRight: CARD_GAP }}
-          >
-            {banners.map((banner) => (
-              <View
-                key={banner.id}
-                className="rounded-3xl items-center justify-center overflow-hidden"
-                style={{
-                  width: CARD_WIDTH,
-                  height: CARD_WIDTH, // 正方形
-                  marginRight: CARD_GAP,
-                  backgroundColor: banner.color,
-                  shadowColor: banner.color,
-                  shadowOpacity: 0.3,
-                  shadowRadius: 12,
-                  shadowOffset: { width: 0, height: 4 },
-                  elevation: 5,
-                }}
-              >
-                {/* 标签 */}
-                <View className="absolute top-4 left-4 bg-white/20 rounded-full px-3 py-1">
-                  <Text className="text-white text-xs font-bold">{banner.tag}</Text>
-                </View>
-
-                {/* 内容 */}
-                <Text className="text-white text-2xl font-extrabold px-6 text-center leading-8">
-                  {banner.title}
-                </Text>
-                <Text className="text-white/80 text-sm mt-3 px-6 text-center">
-                  {banner.subtitle}
-                </Text>
-
-                {/* 底部 CTA */}
-                <View className="absolute bottom-6 bg-white rounded-full px-6 py-2">
-                  <Text className="font-bold text-sm" style={{ color: banner.color }}>立即查看 →</Text>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
+        )}
 
         {/* ── 推荐码 — 长方形（正方形一半高） ── */}
         <View className="px-5 mt-4">

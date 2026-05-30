@@ -24,6 +24,7 @@ import {
 } from '../api/products';
 import { useCartStore } from '../store/cart';
 import { FruitInfo } from './FruitInfo';
+import { ProductName } from './ProductName';
 
 const OPTION_TYPE_LABELS: Record<string, string> = {
   sweetness: '甜度',
@@ -194,7 +195,13 @@ export function ProductSheet({ product, visible, onClose }: Props) {
             {/* 标题区 */}
             <View className="px-5 pt-3 pb-3 flex-row items-start justify-between">
               <View className="flex-1 pr-4">
-                <Text className="text-xl font-bold text-ink-900">{product.name_cn}</Text>
+                <ProductName
+                  name={product.name_cn}
+                  size="lg"
+                  layout="stack"
+                  mainStyle={{ color: '#1a1a1a' }}
+                  subStyle={{ color: '#737373' }}
+                />
                 {product.description ? (
                   <Text className="text-xs text-ink-500 mt-1.5" numberOfLines={2}>
                     {product.description}

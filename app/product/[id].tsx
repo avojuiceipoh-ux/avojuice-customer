@@ -9,6 +9,7 @@ import { DEFAULT_OUTLET_ID } from '../../src/lib/env';
 import { useCartStore } from '../../src/store/cart';
 import { useAuthStore } from '../../src/store/auth';
 import { FruitInfo } from '../../src/components/FruitInfo';
+import { ProductName } from '../../src/components/ProductName';
 import { useTheme } from '../../src/lib/theme';
 
 const OPTION_TYPE_LABELS: Record<string, string> = { sweetness: '甜度', ice: '冰量' };
@@ -102,7 +103,13 @@ export default function ProductDetail() {
 
         {/* 标题 + 简短描述 + 价格 */}
         <View className="px-5 pt-5">
-          <Text style={{ color: text }} className="text-2xl font-bold">{product.name_cn}</Text>
+          <ProductName
+            name={product.name_cn}
+            size="xl"
+            layout="stack"
+            mainStyle={{ color: text }}
+            subStyle={{ color: sub }}
+          />
           {product.name_en ? <Text style={{ color: sub }} className="text-sm mt-1">{product.name_en}</Text> : null}
           {/* 简短描述 — 紧贴标题下，作为副标题 */}
           {product.short_desc ? (
