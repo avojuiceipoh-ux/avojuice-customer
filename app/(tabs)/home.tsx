@@ -263,7 +263,7 @@ export default function HomeScreen() {
                       source={{ uri: banner.image_url }}
                       style={{
                         width: CARD_WIDTH,
-                        height: CARD_WIDTH * 0.5, // 16:8 比例
+                        height: CARD_WIDTH, // 正方形，与旧版一致
                         borderRadius: 24,
                         backgroundColor: isDark ? '#262626' : '#e8f5e0',
                       }}
